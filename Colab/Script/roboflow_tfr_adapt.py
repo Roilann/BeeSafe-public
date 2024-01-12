@@ -7,7 +7,8 @@
 # 2) verify that there is no other zip file in this folder
 
 # Result
-# You should get a folder named "tfrecord" and 4 file inside "labelmap.pbtxt" "test.tfrecord" "train.tfrecord" "valid.tfrecord"
+# You should get a folder named "tfrecord" and 4 file inside
+# "labelmap.pbtxt" "test.tfrecord" "train.tfrecord" "valid.tfrecord"
 
 import os
 import shutil

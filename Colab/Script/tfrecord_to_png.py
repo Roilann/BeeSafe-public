@@ -2,6 +2,7 @@ import os
 import tensorflow as tf
 from PIL import Image
 
+
 def _parse_function(proto):
     # Define your feature names and types here
     keys_to_features = {
@@ -28,10 +29,12 @@ def _parse_function(proto):
 
     return parsed_features
 
+
 def load_tfrecord_dataset(tfrecord_path):
     raw_dataset = tf.data.TFRecordDataset(tfrecord_path)
     parsed_dataset = raw_dataset.map(_parse_function)
     return parsed_dataset
+
 
 def extract_images(dataset, output_dir):
     os.makedirs(output_dir, exist_ok=True)
@@ -44,7 +47,8 @@ def extract_images(dataset, output_dir):
         with open(image_path, 'wb') as f:
             f.write(image_encoded)
 
-        #print(f"Image {i+1} extracted to: {image_path}")
+        # print(f"Image {i+1} extracted to: {image_path}")
+
 
 # Example usage
 tfrecord_path = '/content/tfrecord/test.tfrecord'

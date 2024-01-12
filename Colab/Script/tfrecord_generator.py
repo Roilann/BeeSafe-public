@@ -89,7 +89,7 @@ def generate_tfrecord(csv_input_path, labelmap_path, image_dir_path, output_tfre
     print('Successfully created the TFRecords: {}'.format(output_path))
 
     # Craft labelmap file (.pbtxt)
-    path_to_labelpbtxt = os.path.join(os.getcwd(), 'labelmap.pbtxt')
+    path_to_labelpbtxt = os.path.join(os.getcwd(), 'tfrecord/labelmap.pbtxt')
 
     with open(labelmap_path, 'r') as f:
         labels = [line.strip() for line in f.readlines()]
@@ -110,8 +110,8 @@ if __name__ == '__main__':
     images_train_path = os.path.join(script_directory, 'images/train')
     images_valid_path = os.path.join(script_directory, 'images/valid')
 
-    output_train_path = os.path.join(script_directory, 'train.tfrecord')
-    output_valid_path = os.path.join(script_directory, 'valid.tfrecord')
+    output_train_path = os.path.join(script_directory, 'tfrecord/train.tfrecord')
+    output_valid_path = os.path.join(script_directory, 'tfrecord/valid.tfrecord')
 
     # train.tfrecord generation
     generate_tfrecord(train_csv_path, label_path, images_train_path, output_train_path)
