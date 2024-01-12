@@ -84,9 +84,9 @@ def main():
     parsed_data = parse_labelmap(labelmap_path)
 
     # datitran part
-    with open(labelmap_output_path, 'w') as f:
-        for i, label in enumerate(parsed_data, start=1):
-            f.write(f'item {{\n  id: {i}\n  name: \'{label}\'\n}}\n\n')
+    with open(output_path, 'w') as f:
+        for item_id, item_name in parsed_data:
+            f.write(f'item {{\n  id: {item_id}\n  name: \'{item_name}\'\n}}\n\n')
 
     # Step 9: Delete the extracted folder and its contents
     shutil.rmtree(extract_path)
