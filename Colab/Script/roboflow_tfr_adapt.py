@@ -78,7 +78,7 @@ def main():
     first_subfolder_path = os.path.join(extract_path, subfolders[0])
     labelmap_file = [file for file in os.listdir(folder_path) if file.endswith('.pbtxt')]
     labelmap_path = os.path.join(first_subfolder_path, labelmap_file[0])
-    labelmap_output_path = os.path.join(output_path, "labelmap.pbtxt")
+    labelmap_output_path = os.path.join(output_path, 'labelmap.pbtxt')
 
     # Step 8: Adapt Roboflow labelmap.pbtxt to tf standard
     parsed_data = parse_labelmap(labelmap_path)
