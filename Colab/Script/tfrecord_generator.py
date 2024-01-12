@@ -104,13 +104,13 @@ def generate_tfrecord(csv_input_path, labelmap_path, image_dir_path, output_tfre
 if __name__ == '__main__':
     # train.tfrecord generation
     generate_tfrecord(csv_input_path='/content/images/train_labels.csv',
-        labelmap_path='/content/labelmap.txt',
+        labelmap_path='labelmap.txt',
         image_dir_path='/content/images/train',
         output_tfrecord_path='/content/train.tfrecord'
     )
     # val.tfrecord generation
     generate_tfrecord(csv_input_path='/content/images/valid_labels.csv',
-        labelmap_path='/content/labelmap.txt',
+        labelmap_path='labelmap.txt',
         image_dir_path='/content/images/valid',
         output_tfrecord_path='/content/val.tfrecord'
     )
