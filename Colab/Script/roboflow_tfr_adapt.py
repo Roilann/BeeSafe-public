@@ -82,10 +82,12 @@ def main():
 
     # Step 8: Adapt Roboflow labelmap.pbtxt to tf standard
     parsed_data = parse_labelmap(labelmap_path)
+    print(parsed_data)
 
     # datitran part
     with open(labelmap_output_path, 'w') as f:
         for item_id, item_name in parsed_data:
+            print(f'item {{\n  id: {item_id}\n  name: \'{item_name}\'\n}}\n\n')
             f.write(f'item {{\n  id: {item_id}\n  name: \'{item_name}\'\n}}\n\n')
 
     # Step 9: Delete the extracted folder and its contents
