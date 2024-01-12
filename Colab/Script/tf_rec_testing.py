@@ -102,8 +102,8 @@ def generate_tfrecord(csv_input_path, labelmap_path, image_dir_path, output_tfre
 if __name__ == '__main__':
     script_directory = os.path.dirname(os.path.abspath(__file__))
 
-    train_csv_path = os.path.join(script_directory, 'train_labels.csv')
-    valid_csv_path = os.path.join(script_directory, 'valid_labels.csv')
+    train_csv_path = os.path.join(script_directory, 'images/train_labels.csv')
+    valid_csv_path = os.path.join(script_directory, 'images/valid_labels.csv')
 
     label_path = os.path.join(script_directory, 'labelmap.txt')
 
