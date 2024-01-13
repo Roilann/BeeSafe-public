@@ -105,7 +105,7 @@ if __name__ == '__main__':
     train_csv_path = os.path.join(script_directory, 'images/train_labels.csv')
     valid_csv_path = os.path.join(script_directory, 'images/valid_labels.csv')
 
-    label_path = os.path.join(script_directory, 'labelmap.txt')
+    label_path = os.path.join(script_directory, 'tfrecord/labelmap.txt')
 
     images_train_path = os.path.join(script_directory, 'images/train')
     images_valid_path = os.path.join(script_directory, 'images/valid')
