@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 import time
 from concurrent.futures import ThreadPoolExecutor
 
-PIC_EXT = {'.png', '.jpg'}  # Use a set for faster membership tests
+PIC_EXT = {'.png', '.jpg', '.jpeg', '.gif'}  # Use a set for faster membership tests
 
 
 def process_xml(xml_path, unique_object_names):
@@ -43,11 +43,11 @@ def check_folder(folder_path):
     second_file_path = os.path.join(folder_path, files[1])
 
     if not first_file_path.endswith(tuple(PIC_EXT)):
-        print(f'{folder_path} does not contain a picture')
+        print(f'{folder_path} does contain {first_file_path} wich is not a picture')
         return False
 
     if not second_file_path.lower().endswith('.xml'):
-        print(f'{folder_path} does not contain an XML file')
+        print(f'{folder_path} does contain {second_file_path} wich is not a xml')
         return False
 
     return True
