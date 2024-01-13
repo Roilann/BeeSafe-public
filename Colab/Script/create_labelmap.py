@@ -25,18 +25,20 @@ def process_xml(xml_path, unique_names):
         print(f"Error parsing XML file {xml_path}: {e}")
 
 
-def process_files_and_xml(folders_path):
+def process_files_and_xml(folders):
     # List to store unique object names
     unique_names = set()
     folder_check = 0
 
-    for folder_path in folders_path:
+    for folder in folders:
         # Get the list of files in the specified folder
+        folder_path = os.path.join('images', folder)
         files = os.listdir(folder_path)
-        print(f'checking {folder_path}')
+        print(f'checking {folder}')
 
         # Check if there are at least two files in the folder
         if len(files) < 2:
+            print(f' Less than 2 file in {folder}')
             continue
 
         # Check if the first two files have allowed extensions
@@ -44,6 +46,7 @@ def process_files_and_xml(folders_path):
         second_file_path = os.path.join(folder_path, files[1])
 
         if not first_file_path.lower().endswith(tuple(PIC_EXT)) or not second_file_path.lower().endswith('.xml'):
+            print(f'{folder} does not contain pascal_voc data')
             continue
 
         xml_files = [os.path.join(folder_path, filename) for filename in files if filename.lower().endswith('.xml')]
@@ -64,12 +67,10 @@ def process_files_and_xml(folders_path):
 # Record the start time
 start_time = time.time()
 
-folders_path = ["images/train",
-                "images/test",
-                "images/valid"]
+folders = ["train", "test", "valid"]
 
 # Process files and XML
-result, classes = process_files_and_xml(folders_path)
+result, classes = process_files_and_xml(folders)
 print(result)
 print(classes)
 
