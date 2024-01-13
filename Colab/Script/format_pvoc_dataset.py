@@ -187,7 +187,6 @@ create_folder(output_path)
 # Step 2: Identify the zip file(s) and extracted folder dynamically
 zip_files = [file for file in os.listdir(script_directory) if file.endswith('.zip')]
 nb_zip_files = len(zip_files)
-subfolders = 0
 if nb_zip_files != (1 and 3):
     raise ValueError(f"Error: There should be 1 zip file or 3 in the directory but there was {nb_zip_files}.")
 
@@ -220,8 +219,11 @@ for zip_file in zip_files:
         shutil.move(extracted_folder, folder_images_path)
 
 # Step 4: Creates labelmap.txt
+# Get folders in images
+folders_to_process = [subfolder for subfolder in os.listdir(images_path) if
+                      os.path.isdir(os.path.join(images_path, subfolder))]
 # Get classes from xml
-result, unique_classes = process_files_and_xml(subfolders)
+result, unique_classes = process_files_and_xml(folders_to_process)
 if result:
     print(f'classes found : {unique_classes}')
     # Print classes to labelmap
