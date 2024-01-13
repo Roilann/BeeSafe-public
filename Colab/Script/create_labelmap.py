@@ -26,6 +26,11 @@ def process_xml(xml_path, unique_object_names):
 
 
 def check_folder(folder_path):
+
+    # Check if the folder exists
+    if not os.path.exists(folder_path):
+        return False
+
     files = os.listdir(folder_path)
 
     # Check if there are at least two files in the folder
@@ -37,7 +42,7 @@ def check_folder(folder_path):
     first_file_path = os.path.join(folder_path, files[0])
     second_file_path = os.path.join(folder_path, files[1])
 
-    if not first_file_path.lower().endswith(tuple(PIC_EXT)):
+    if not first_file_path.endswith(tuple(PIC_EXT)):
         print(f'{folder_path} does not contain a picture')
         return False
 
@@ -59,7 +64,8 @@ def process_files_and_xml(folders):
         if not check_folder(folder_path):
             continue
 
-        xml_files = [os.path.join(folder_path, filename) for filename in os.listdir(folder_path) if filename.lower().endswith('.xml')]
+        xml_files = [os.path.join(folder_path, filename) for filename in os.listdir(folder_path) if
+                     filename.lower().endswith('.xml')]
 
         with ThreadPoolExecutor() as executor:
             executor.map(lambda xml_path: process_xml(xml_path, unique_object_names), xml_files)
@@ -75,7 +81,11 @@ def process_files_and_xml(folders):
 # Record the start time
 start_time = time.time()
 
-folders_to_process = ["train", "test", "valid"]
+extract_path = 'images'
+
+# Step 4: Identify subfolders within the extracted folder
+folders_to_process = [subfolder for subfolder in os.listdir(extract_path) if
+                      os.path.isdir(os.path.join(extract_path, subfolder))]
 
 # Process files and XML
 unique_classes = process_files_and_xml(folders_to_process)
