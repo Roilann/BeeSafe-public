@@ -197,14 +197,11 @@ for zip_file in zip_files:
     # Step 3.1: Unzip the identified zip file into the extracted folder
     zip_path = os.path.join(script_directory, zip_file)
     extract_path = os.path.join(script_directory, extracted_folder)
-    print(f"Start {zip_file} extraction")
+    print(f"\nStart {zip_file} extraction")
     unzip_file(zip_path, extract_path)
     print(f"{zip_file} is extracted")
 
     # Step 3.2: Identify subfolders within the extracted folder
-    subfolders = [subfolder for subfolder in os.listdir(os.path.join(script_directory, extracted_folder)) if
-                  os.path.isdir(os.path.join(script_directory, extracted_folder, subfolder))]
-
     result, subfolders = contains_subfolder(os.path.join(script_directory, extracted_folder))
 
     if result:
@@ -215,6 +212,9 @@ for zip_file in zip_files:
             folder_images_path = os.path.join(images_path, folder_name)
 
             shutil.move(folder_path, folder_images_path)
+    else:
+        folder_images_path = os.path.join(images_path, zip_file)
+        shutil.move(extracted_folder, folder_images_path)
 
     # Step 3.4: Delete the extracted folder and its contents
     shutil.rmtree(extract_path)
