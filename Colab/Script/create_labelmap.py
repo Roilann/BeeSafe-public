@@ -45,8 +45,12 @@ def process_files_and_xml(folders):
         first_file_path = os.path.join(folder_path, files[0])
         second_file_path = os.path.join(folder_path, files[1])
 
-        if not first_file_path.lower().endswith(tuple(PIC_EXT)) or not second_file_path.lower().endswith('.xml'):
-            print(f'{folder} does not contain pascal_voc data')
+        if not first_file_path.lower().endswith(tuple(PIC_EXT)):
+            print(f'{folder} does not contain picture')
+            continue
+
+        if not second_file_path.lower().endswith('.xml'):
+            print(f'{folder} does not contain xml')
             continue
 
         xml_files = [os.path.join(folder_path, filename) for filename in files if filename.lower().endswith('.xml')]
