@@ -1,6 +1,5 @@
 import os
 import xml.etree.ElementTree as ET
-import time
 from concurrent.futures import ThreadPoolExecutor
 
 PIC_EXT = {'.png', '.jpg', '.jpeg', '.gif'}  # Use a set for faster membership tests
@@ -87,9 +86,6 @@ def process_files_and_xml(folders):
         return False, []
 
 
-# Record the start time
-start_time = time.time()
-
 extract_path = 'images'
 
 # Step 4: Identify subfolders within the extracted folder
@@ -98,8 +94,7 @@ folders_to_process = [subfolder for subfolder in os.listdir(extract_path) if
 
 # Process files and XML
 result, unique_classes = process_files_and_xml(folders_to_process)
-print(result)
-print(unique_classes)
+print(f'classes found : {unique_classes}')
 
 output_path = 'tfrecord'
 create_folder(output_path)
@@ -109,10 +104,3 @@ labelmap_path = 'tfrecord/labelmap.txt'
 with open(labelmap_path, 'w') as f:
     for item_name in unique_classes:
         f.write(f'{item_name}\n')
-
-# Record the end time
-end_time = time.time()
-
-# Calculate and print the execution time
-execution_time = end_time - start_time
-print(f"Execution time: {execution_time:.4f} seconds")
