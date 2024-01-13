@@ -94,7 +94,10 @@ folders_to_process = [subfolder for subfolder in os.listdir(extract_path) if
 unique_classes = process_files_and_xml(folders_to_process)
 print(unique_classes)
 
-labelmap_path = '/tfrecord/labelmap.txt'
+output_path = 'tfrecord'
+os.makedirs(output_path)
+
+labelmap_path = 'tfrecord/labelmap.txt'
 
 with open(labelmap_path, 'w') as f:
     for item_name in unique_classes:
