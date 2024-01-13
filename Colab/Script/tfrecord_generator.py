@@ -23,7 +23,12 @@ from object_detection.utils import dataset_util
 from collections import namedtuple
 
 
-def generate_tfrecord(csv_input_path, labelmap_path, image_dir_path, output_tfrecord_path):
+def generate_tfrecord(script_directory, folder):
+    csv_input_path = os.path.join(script_directory, 'images', folder + '_labels.csv')
+    labelmap_path = os.path.join(script_directory, 'tfrecord/labelmap.txt')
+    image_dir_path = os.path.join(script_directory, 'images', folder)
+    output_tfrecord_path = os.path.join(script_directory, 'tfrecord', folder+'.tfrecord')
+
     def split(df, group):
         data = namedtuple('data', ['filename', 'object'])
         gb = df.groupby(group)
@@ -99,21 +104,21 @@ def generate_tfrecord(csv_input_path, labelmap_path, image_dir_path, output_tfre
             f.write(f'item {{\n  id: {i}\n  name: \'{label}\'\n}}\n\n')
 
 
-if __name__ == '__main__':
-    script_directory = os.path.dirname(os.path.abspath(__file__))
+script_directory = os.path.dirname(os.path.abspath(__file__))
 
-    train_csv_path = os.path.join(script_directory, 'images/train_labels.csv')
-    valid_csv_path = os.path.join(script_directory, 'images/valid_labels.csv')
+# train_csv_path = os.path.join(script_directory, 'images/train_labels.csv')
+# valid_csv_path = os.path.join(script_directory, 'images/valid_labels.csv')
 
-    label_path = os.path.join(script_directory, 'tfrecord/labelmap.txt')
+# label_path = os.path.join(script_directory, 'tfrecord/labelmap.txt')
 
-    images_train_path = os.path.join(script_directory, 'images/train')
-    images_valid_path = os.path.join(script_directory, 'images/valid')
+# images_train_path = os.path.join(script_directory, 'images/train')
+# images_valid_path = os.path.join(script_directory, 'images/valid')
 
-    output_train_path = os.path.join(script_directory, 'tfrecord/train.tfrecord')
-    output_valid_path = os.path.join(script_directory, 'tfrecord/valid.tfrecord')
+# output_train_path = os.path.join(script_directory, 'tfrecord/train.tfrecord')
+# output_valid_path = os.path.join(script_directory, 'tfrecord/valid.tfrecord')
 
-    # train.tfrecord generation
-    generate_tfrecord(train_csv_path, label_path, images_train_path, output_train_path)
-    # train.tfrecord generation
-    generate_tfrecord(valid_csv_path, label_path, images_valid_path, output_valid_path)
+folders = ['train', 'valid']
+
+for folder in folders:
+    generate_tfrecord(script_directory, folder)
+
