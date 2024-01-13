@@ -38,6 +38,9 @@ def check_folder(folder_path):
         print(f' Less than 2 files in {folder_path}')
         return False
 
+    # Sort files to ensure consistent order (e.g., alphabetical)
+    files.sort()
+
     # Check if the first two files have allowed extensions
     first_file_path = os.path.join(folder_path, files[0])
     second_file_path = os.path.join(folder_path, files[1])
