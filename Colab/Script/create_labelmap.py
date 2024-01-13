@@ -91,7 +91,8 @@ folders_to_process = [subfolder for subfolder in os.listdir(extract_path) if
                       os.path.isdir(os.path.join(extract_path, subfolder))]
 
 # Process files and XML
-unique_classes = process_files_and_xml(folders_to_process)
+result, unique_classes = process_files_and_xml(folders_to_process)
+print(result)
 print(unique_classes)
 
 output_path = 'tfrecord'
