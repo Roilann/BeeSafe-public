@@ -216,21 +216,21 @@ for zip_file in zip_files:
         folder_images_path = os.path.join(images_path, zip_file)
         shutil.move(extracted_folder, folder_images_path)
 
-    # Step 3.4: Delete the extracted folder and its contents
-    shutil.rmtree(extract_path)
+# Step 4: Delete the extracted folder and its contents
+shutil.rmtree(extract_path)
 
-# Step 4: Creates labelmap.txt
+# Step 5: Creates labelmap.txt
 # Get classes from xml
 result, unique_classes = process_files_and_xml(subfolders)
 if result:
     print(f'classes found : {unique_classes}')
     # Print classes to labelmap
-    labelmap_path = os.path.join(output_path + 'labelmap.txt')
+    labelmap_path = os.path.join(output_path, 'labelmap.txt')
     with open(labelmap_path, 'w') as f:
         for item_name in unique_classes:
             f.write(f'{item_name}\n')
 
-# Step 8: xml_to_csv
+# Step 6: xml_to_csv
 print(f"Start csv conversion")
 for folder in ['train', 'valid']:
     folder_path = os.path.join(images_path, folder)
@@ -239,7 +239,7 @@ for folder in ['train', 'valid']:
     csv_filename = os.path.join(images_path, f"{folder}_labels.csv")
     save_csv(result, csv_filename)
 
-# Step 9: tfrecord_conversion
+# Step 7: tfrecord_conversion
 print(f"Start tfrecord conversion")
 
 # Time
