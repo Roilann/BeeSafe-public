@@ -6,6 +6,15 @@ from concurrent.futures import ThreadPoolExecutor
 PIC_EXT = {'.png', '.jpg', '.jpeg', '.gif'}  # Use a set for faster membership tests
 
 
+def create_folder(folder_path):
+    # Check if the folder already exists
+    if not os.path.exists(folder_path):
+        # If not, create the folder
+        os.makedirs(folder_path)
+        print(f"Folder '{folder_path}' created.")
+    else:
+        print(f"Folder '{folder_path}' already exists.")
+
 def process_xml(xml_path, unique_object_names):
     try:
         tree = ET.parse(xml_path)
@@ -96,7 +105,7 @@ print(result)
 print(unique_classes)
 
 output_path = 'tfrecord'
-os.makedirs(output_path)
+create_folder(output_path)
 
 labelmap_path = 'tfrecord/labelmap.txt'
 
