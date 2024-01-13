@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 PIC_EXT = {'.png', '.jpg'}  # Use a set for faster membership tests
 
 
-def process_xml(xml_path, unique_names):
+def process_xml(xml_path, unique_object_names):
     try:
         tree = ET.parse(xml_path)
         root = tree.getroot()
@@ -19,51 +19,55 @@ def process_xml(xml_path, unique_names):
                 object_name = name_elem.text
 
                 # Add the name to the set
-                unique_names.add(object_name)
+                unique_object_names.add(object_name)
 
     except ET.ParseError as e:
         print(f"Error parsing XML file {xml_path}: {e}")
 
 
+def check_folder(folder_path):
+    files = os.listdir(folder_path)
+
+    # Check if there are at least two files in the folder
+    if len(files) < 2:
+        print(f' Less than 2 files in {folder_path}')
+        return False
+
+    # Check if the first two files have allowed extensions
+    first_file_path = os.path.join(folder_path, files[0])
+    second_file_path = os.path.join(folder_path, files[1])
+
+    if not first_file_path.lower().endswith(tuple(PIC_EXT)):
+        print(f'{folder_path} does not contain a picture')
+        return False
+
+    if not second_file_path.lower().endswith('.xml'):
+        print(f'{folder_path} does not contain an XML file')
+        return False
+
+    return True
+
+
 def process_files_and_xml(folders):
-    # List to store unique object names
-    unique_names = set()
+    unique_object_names = set()
     folder_check = 0
 
     for folder in folders:
-        # Get the list of files in the specified folder
         folder_path = os.path.join('images', folder)
-        files = os.listdir(folder_path)
-        print(f'checking {folder}')
+        print(f'Checking {folder}')
 
-        # Check if there are at least two files in the folder
-        if len(files) < 2:
-            print(f' Less than 2 file in {folder}')
+        if not check_folder(folder_path):
             continue
 
-        # Check if the first two files have allowed extensions
-        first_file_path = os.path.join(folder_path, files[0])
-        second_file_path = os.path.join(folder_path, files[1])
+        xml_files = [os.path.join(folder_path, filename) for filename in os.listdir(folder_path) if filename.lower().endswith('.xml')]
 
-        if not first_file_path.lower().endswith(tuple(PIC_EXT)):
-            print(f'{folder} does not contain picture')
-            continue
-
-        if not second_file_path.lower().endswith('.xml'):
-            print(f'{folder} does not contain xml')
-            continue
-
-        xml_files = [os.path.join(folder_path, filename) for filename in files if filename.lower().endswith('.xml')]
-
-        # Use ThreadPoolExecutor to parallelize the XML processing
-        # Useful when a lot of files to check
         with ThreadPoolExecutor() as executor:
-            executor.map(lambda xml_path: process_xml(xml_path, unique_names), xml_files)
+            executor.map(lambda xml_path: process_xml(xml_path, unique_object_names), xml_files)
 
         folder_check += 1
 
-    if folder_check == len(folders_path):
-        return True, list(unique_names)
+    if folder_check == len(folders):
+        return True, list(unique_object_names)
     else:
         return False, []
 
@@ -71,17 +75,16 @@ def process_files_and_xml(folders):
 # Record the start time
 start_time = time.time()
 
-folders = ["train", "test", "valid"]
+folders_to_process = ["train", "test", "valid"]
 
 # Process files and XML
-result, classes = process_files_and_xml(folders)
-print(result)
-print(classes)
+unique_classes = process_files_and_xml(folders_to_process)
+print(unique_classes)
 
 labelmap_path = '/tfrecord/labelmap.txt'
 
 with open(labelmap_path, 'w') as f:
-    for item_name in classes:
+    for item_name in unique_classes:
         f.write(f'{item_name}\n')
 
 # Record the end time
