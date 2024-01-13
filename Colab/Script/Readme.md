@@ -7,9 +7,9 @@ They are made so no arguments are passed
 **Credits**: *[datitran](https://github.com/datitran/raccoon_dataset/blob/master/generate_tfrecord.py)*
 
 **Explanation** : Format the files in a better way to train and test your AI in Colab.\
-It also modifies the labelmap to be understandable by Tensorflow. (datitran)\
+It also creates the labelmap.txt to visualize results\
 <u>Input:</u> 1 ZIP file (with **train** / **valid** / **test** inside)\
-<u>Output:</u> (3 tfrecord (**train** / **valid** / **test**) + 1 labelmap.pbtxt) => inside a folder `tfrecord`
+<u>Output:</u> (3 tfrecord (**train** / **valid** / **test**) + 1 labelmap.pbtxt + 1 labelmap.txt) => inside a folder `tfrecord`
 
 ## tfrecord_generator.py
 **Author**: *Roilann* + *ChatGPT*\
