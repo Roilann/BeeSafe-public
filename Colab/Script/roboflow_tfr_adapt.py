@@ -70,15 +70,18 @@ def main():
     first_subfolder_path = os.path.join(extract_path, subfolders[0])
     labelmap_file = [file for file in os.listdir(folder_path) if file.endswith('.pbtxt')]
     labelmap_path = os.path.join(first_subfolder_path, labelmap_file[0])
-    labelmap_output_path = os.path.join(output_path, 'labelmap.txt')
+    labelmap_txt_path = os.path.join(output_path, 'labelmap.txt')
+    labelmap_pbtxt_path = os.path.join(output_path, 'labelmap.pbtxt')
+
+    os.rename(labelmap_path, labelmap_pbtxt_path)
 
     # Step 8: Take labelmap.pbtxt to create labelmap.txt tf standard
-    with open(labelmap_path, 'r') as file:
+    with open(labelmap_pbtxt_path, 'r') as file:
         labelmap_content = file.read()
 
     parsed_data = parse_labelmap(labelmap_content)
 
-    with open(labelmap_output_path, 'w') as f:
+    with open(labelmap_txt_path, 'w') as f:
         for item_name in parsed_data:
             f.write(f'{item_name}\n')
 
