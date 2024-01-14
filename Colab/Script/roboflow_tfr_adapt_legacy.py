@@ -14,6 +14,17 @@ import re
 from zipfile import ZipFile
 
 
+def contains_subfolder(folder_path):
+    if os.path.isdir(folder_path):
+        subfolders = [item for item in os.listdir(folder_path) if os.path.isdir(os.path.join(folder_path, item))]
+        if subfolders:
+            return True, subfolders
+        else:
+            return False, []
+    else:
+        raise ValueError(f"The provided path '{folder_path}' is not a valid directory.")
+
+
 def parse_labelmap(labelmap_content):
     items = re.findall(r'item\s*{([^}]+)}', labelmap_content)
     result = []
@@ -56,8 +67,7 @@ extract_path = os.path.join(script_directory, extracted_folder)
 unzip_file(zip_path, extract_path)
 
 # Step 4: Identify subfolders within the extracted folder
-subfolders = [subfolder for subfolder in os.listdir(extract_path) if
-              os.path.isdir(os.path.join(extract_path, subfolder))]
+result, subfolders = contains_subfolder(extract_path)
 
 # Step 6: Process subfolders (train, test, valid)
 for folder_name in subfolders:
@@ -66,7 +76,6 @@ for folder_name in subfolders:
 
     if len(tf_file) > 1:
         raise ValueError(f"Error: More than one .tfrecord file found in folder {folder_name}")
-
     if len(tf_file) == 0:
         raise ValueError(f"Error: No .tfrecord file found in folder {folder_name}")
 
