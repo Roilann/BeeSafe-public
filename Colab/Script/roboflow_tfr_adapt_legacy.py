@@ -49,6 +49,17 @@ def unzip_file(zip_path, extract_path):
         zip_ref.extractall(extract_path)
 
 
+def check_folder_4_tfr(folder_path, folder_name):
+    tf_files = 0
+    if os.path.isdir(folder_path):
+        tf_files = [file for file in os.listdir(folder_path) if file.endswith('.tfrecord')]
+        if len(tf_files) > 1:
+            raise ValueError(f"Error: More than one .tfrecord file found in folder {folder_name}")
+        if len(tf_files) == 0:
+            raise ValueError(f"Error: No .tfrecord file found in folder {folder_name}")
+    return tf_files
+
+
 # Measure execution time
 start_time = time.time()
 
@@ -64,7 +75,6 @@ zip_files = [file for file in os.listdir(script_directory) if file.endswith('.zi
 nb_zip_files = len(zip_files)
 if nb_zip_files != 1 and nb_zip_files != 3:
     raise ValueError(f"Error: There should be 1 zip file or 3 in the directory but there was {nb_zip_files}.")
-
 
 for i, zip_file in enumerate(zip_files):
     extracted_folder = os.path.splitext(zip_file)[0]
@@ -84,29 +94,26 @@ for i, zip_file in enumerate(zip_files):
     if result:
         for folder_name in subfolders:
             folder_path = os.path.join(extract_path, folder_name)
-            tf_file = [file for file in os.listdir(folder_path) if file.endswith('.tfrecord')]
-
-            if len(tf_file) > 1:
-                raise ValueError(f"Error: More than one .tfrecord file found in folder {folder_name}")
-            if len(tf_file) == 0:
-                raise ValueError(f"Error: No .tfrecord file found in folder {folder_name}")
+            tf_file = check_folder_4_tfr(folder_path, folder_name)
 
             tf_file_path = os.path.join(folder_path, tf_file[0])
             tf_file_output_path = os.path.join(output_path, f"{folder_name}.tfrecord")
 
             os.rename(tf_file_path, tf_file_output_path)
+    else:
+        folder_name = os.path.basename(extract_path)
+        tf_file = check_folder_4_tfr(extract_path, folder_name)
+        tf_file_path = os.path.join(extract_path, tf_file[0])
+        tf_file_output_path = os.path.join(output_path, f"{folder_name}.tfrecord")
+
+        os.rename(tf_file_path, tf_file_output_path)
 
     print(f'i = {i}')
     # Step 3.4: Get the labelmap
-    if i == 0 and result:
-        first_subfolder_path = os.path.join(extract_path, subfolders[0])
+    if i == 0:
+        first_subfolder_path = os.path.join(extract_path, subfolders[0]) if result else extract_path
         labelmap_file = [file for file in os.listdir(first_subfolder_path) if file.endswith('.pbtxt')]
         labelmap_path = os.path.join(first_subfolder_path, labelmap_file[0])
-        os.rename(labelmap_path, labelmap_pbtxt_path)
-
-    elif i == 0 and not result:
-        labelmap_file = [file for file in os.listdir(extract_path) if file.endswith('.pbtxt')]
-        labelmap_path = os.path.join(extract_path, labelmap_file[0])
         os.rename(labelmap_path, labelmap_pbtxt_path)
 
     # Step 3.5: Delete the extracted folder and its contents
