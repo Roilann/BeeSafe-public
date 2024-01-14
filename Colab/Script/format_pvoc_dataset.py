@@ -13,9 +13,95 @@ from zipfile import ZipFile
 import xml.etree.ElementTree as ET
 import pandas as pd
 import time
+import io
+from PIL import Image
+
 from concurrent.futures import ThreadPoolExecutor
+from object_detection.utils import dataset_util
+from collections import namedtuple
+
+from tensorflow.python.framework.versions import VERSION
+
+if VERSION >= "2.0.0a0":
+    import tensorflow.compat.v1 as tf
+else:
+    import tensorflow as tf
 
 PIC_EXT = {'.png', '.jpg', '.jpeg', '.gif'}  # Use a set for faster membership tests
+
+
+def generate_tfrecord(images_path, output_path, folder):
+    csv_input_path = os.path.join(images_path, f'{folder}_labels.csv')
+    labelmap_path = os.path.join(output_path, 'labelmap.txt')
+    image_dir_path = os.path.join(images_path, folder)
+    output_tfrecord_path = os.path.join(output_path, f'{folder}.tfrecord')
+
+    def split(df, group):
+        data = namedtuple('data', ['filename', 'object'])
+        gb = df.groupby(group)
+        return [data(filename, gb.get_group(x)) for filename, x in zip(gb.groups.keys(), gb.groups)]
+
+    def create_tf_example(group, path, labels):
+        with tf.gfile.GFile(os.path.join(path, f'{group.filename}'), 'rb') as fid:
+            encoded_jpg = fid.read()
+        encoded_jpg_io = io.BytesIO(encoded_jpg)
+        image = Image.open(encoded_jpg_io)
+        width, height = image.size
+
+        filename = group.filename.encode('utf8')
+        image_format = b'jpg'
+        xmins, xmaxs, ymins, ymaxs = [], [], [], []
+        classes_text, classes = [], []
+
+        for index, row in group.object.iterrows():
+            xmins.append(row['xmin'] / width)
+            xmaxs.append(row['xmax'] / width)
+            ymins.append(row['ymin'] / height)
+            ymaxs.append(row['ymax'] / height)
+            classes_text.append(row['class'].encode('utf8'))
+            classes.append(int(labels.index(row['class']) + 1))
+
+        tf_example = tf.train.Example(features=tf.train.Features(feature={
+            'image/height': dataset_util.int64_feature(height),
+            'image/width': dataset_util.int64_feature(width),
+            'image/filename': dataset_util.bytes_feature(filename),
+            'image/source_id': dataset_util.bytes_feature(filename),
+            'image/encoded': dataset_util.bytes_feature(encoded_jpg),
+            'image/format': dataset_util.bytes_feature(image_format),
+            'image/object/bbox/xmin': dataset_util.float_list_feature(xmins),
+            'image/object/bbox/xmax': dataset_util.float_list_feature(xmaxs),
+            'image/object/bbox/ymin': dataset_util.float_list_feature(ymins),
+            'image/object/bbox/ymax': dataset_util.float_list_feature(ymaxs),
+            'image/object/class/text': dataset_util.bytes_list_feature(classes_text),
+            'image/object/class/label': dataset_util.int64_list_feature(classes),
+        }))
+        return tf_example
+
+    # Load and prepare data
+    writer = tf.python_io.TFRecordWriter(output_tfrecord_path)
+    path = os.path.join(os.getcwd(), image_dir_path)
+    examples = pd.read_csv(csv_input_path)
+
+    # Craft TFRecord files (.tfrecord)
+    grouped = split(examples, 'filename')
+    labels = []
+    with open(labelmap_path, 'r') as f:
+        labels = [line.strip() for line in f.readlines()]
+
+    with tf.python_io.TFRecordWriter(output_tfrecord_path) as writer:
+        for group in grouped:
+            tf_example = create_tf_example(group, path, labels)
+            writer.write(tf_example.SerializeToString())
+
+    output_path = os.path.join(os.getcwd(), output_tfrecord_path)
+    print(f'Successfully created the TFRecords: {output_path}')
+
+    # Craft labelmap file (.pbtxt)
+    path_to_labelpbtxt = os.path.join(os.getcwd(), 'tfrecord', 'labelmap.pbtxt')
+
+    with open(path_to_labelpbtxt, 'w') as f:
+        for i, label in enumerate(labels, start=1):
+            f.write(f'item {{\n  id: {i}\n  name: \'{label}\'\n}}\n\n')
 
 
 def contains_subfolder(folder_path):
@@ -218,7 +304,12 @@ for zip_file in zip_files:
         folder_images_path = os.path.join(images_path, extracted_folder)
         shutil.move(extracted_folder, folder_images_path)
 
+step_3 = time.time()
+et_step_3 = start_time - step_3
+print(f"\n\n--Time : Launch to Step 3: {et_step_3} seconds--\n\n")
+
 # Step 4: Creates labelmap.txt
+print(f"\nLabelmap creation")
 # Get folders in images
 folders_to_process = [subfolder for subfolder in os.listdir(images_path) if
                       os.path.isdir(os.path.join(images_path, subfolder))]
@@ -232,8 +323,12 @@ if result:
         for item_name in unique_classes:
             f.write(f'{item_name}\n')
 
+step_4 = time.time()
+et_step_4 = step_3 - step_4
+print(f"\n\n--Time : Step 3 to Step 4: {et_step_4} seconds--\n\n")
+
 # Step 5: xml_to_csv
-print(f"Start csv conversion")
+print(f"\nStart csv conversion")
 for folder in ['train', 'valid']:
     folder_path = os.path.join(images_path, folder)
     result = process_folder_parallel(folder_path)
@@ -241,8 +336,18 @@ for folder in ['train', 'valid']:
     csv_filename = os.path.join(images_path, f"{folder}_labels.csv")
     save_csv(result, csv_filename)
 
+step_5 = time.time()
+et_step_5 = step_4 - step_5
+print(f"\n\n--Time : Step 4 to Step 5: {et_step_5} seconds--\n\n")
+
 # Step 6: tfrecord_conversion
 print(f"Start tfrecord conversion")
+for folder in ['train', 'valid']:
+    generate_tfrecord(images_path, output_path, folder)
+
+step_6 = time.time()
+et_step_6 = step_5 - step_6
+print(f"\n\n--Time : Step 5 to Step 6: {et_step_6} seconds--\n\n")
 
 # Time
 end_time = time.time()
