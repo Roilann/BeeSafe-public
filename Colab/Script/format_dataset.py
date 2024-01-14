@@ -199,6 +199,12 @@ def process_xml(xml_path, unique_object_names):
         print(f"Error parsing XML file {xml_path}: {e}")
 
 
+def check_pvoc_subfolder(folder_path, subfolders):
+    for subfolder in subfolders:
+        if not check_pvoc_folder(os.path.join(folder_path, subfolder)):
+            return False
+    return True
+
 def check_pvoc_folder(folder_path):
     # Check if the folder exists
     if not os.path.exists(folder_path):
@@ -226,6 +232,13 @@ def check_pvoc_folder(folder_path):
         print(f'{folder_path} does contain {second_file_path} which is not a xml')
         return False
 
+    return True
+
+
+def check_tfr_subfolder(folder_path, subfolders):
+    for subfolder in subfolders:
+        if not check_tfr_folder(os.path.join(folder_path, subfolder)):
+            return False
     return True
 
 
@@ -398,7 +411,7 @@ for i, zip_file in enumerate(zip_files):
     if result:
         print(f"Start copy of folders")
         # PASCAL_VOC
-        if check_pvoc_folder(extract_path):
+        if check_pvoc_subfolder(extract_path, subfolders):
             PASCAL_VOC = 1
             TFRECORD = 0
             # Step 3.3: Process subfolders (train, test, valid)
@@ -411,7 +424,7 @@ for i, zip_file in enumerate(zip_files):
             shutil.rmtree(extracted_folder)
 
         # TFRECORD
-        elif check_tfr_folder(extract_path):
+        elif check_tfr_subfolder(extract_path, subfolders):
             PASCAL_VOC = 0
             TFRECORD = 1
             for folder_name in subfolders:
