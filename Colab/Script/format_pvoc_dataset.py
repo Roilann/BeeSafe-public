@@ -352,16 +352,17 @@ print(f"\n\n--Time : Step 5 to Step 6: {et_step_6:.4f} seconds--\n\n")
 # Time
 end_time = time.time()
 elapsed_time = end_time - start_time
-print(f"Execution time: {elapsed_time:.4f} seconds")
+print(f"\n\n--Time : Execution time: {elapsed_time:.4f} seconds--\n\n")
 
 # Deletion
-# shutil.rmtree(output_path)
-# os.remove(os.path.join(script_directory, 'train_labels.csv'))
-# os.remove(os.path.join(script_directory, 'valid_labels.csv'))
+for zip_file in zip_files:
+    shutil.rmtree(zip_file)
+os.remove(os.path.join(images_path, 'train_labels.csv'))
+os.remove(os.path.join(images_path, 'valid_labels.csv'))
 
 # Time
 end_time_deletion = time.time()
 elapsed_time_deletion = end_time_deletion - end_time
-print(f"Deletion time: {elapsed_time_deletion:.4f} seconds")
+print(f"\n\n--Time : Deletion time: {elapsed_time_deletion:.4f} seconds--\n\n")
 complete_elapsed_time = end_time_deletion - start_time
-print(f"Complete Execution time: {complete_elapsed_time:.4f} seconds")
+print(f"\n\n--Time : Complete Execution time: {complete_elapsed_time:.4f} seconds--\n\n")
