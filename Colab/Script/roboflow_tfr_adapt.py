@@ -95,11 +95,7 @@ for zip_file in zip_files:
         folder_images_path = os.path.join(images_path, extracted_folder)
         shutil.move(extracted_folder, folder_images_path)
 
-# Step 5: Create the output folder (tfrecord)
-output_path = os.path.join(script_directory, 'tfrecord')
-os.makedirs(output_path)
-
-# Step 6: Process subfolders (train, test, valid)
+# Step 4: Process subfolders (train, test, valid)
 for folder_name in subfolders:
     folder_path = os.path.join(extract_path, folder_name)
     tf_file = [file for file in os.listdir(folder_path) if file.endswith('.tfrecord')]
@@ -115,7 +111,7 @@ for folder_name in subfolders:
 
     os.rename(tf_file_path, tf_file_output_path)
 
-# Step 7: Get the labelmap
+# Step 5: Get the labelmap
 first_subfolder_path = os.path.join(extract_path, subfolders[0])
 labelmap_file = [file for file in os.listdir(folder_path) if file.endswith('.pbtxt')]
 labelmap_path = os.path.join(first_subfolder_path, labelmap_file[0])
@@ -124,7 +120,7 @@ labelmap_pbtxt_path = os.path.join(output_path, 'labelmap.pbtxt')
 
 os.rename(labelmap_path, labelmap_pbtxt_path)
 
-# Step 8: Take labelmap.pbtxt to create labelmap.txt tf standard
+# Step 6: Take labelmap.pbtxt to create labelmap.txt tf standard
 with open(labelmap_pbtxt_path, 'r') as file:
     labelmap_content = file.read()
 
@@ -134,7 +130,7 @@ with open(labelmap_txt_path, 'w') as f:
     for item_name in parsed_data:
         f.write(f'{item_name}\n')
 
-# Step 9: Delete the extracted folder and its contents
+# Step 7: Delete the extracted folder and its contents
 shutil.rmtree(extract_path)
 
 # Time
