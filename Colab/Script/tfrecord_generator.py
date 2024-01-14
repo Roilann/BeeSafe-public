@@ -3,10 +3,7 @@
 # Inspired by Github user EdjeElectronics: https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/util_scripts/create_tfrecord.py
 # Updated by Github user Roilann:
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import absolute_import
-
+from __future__ import division, print_function, absolute_import
 import os
 import io
 import pandas as pd
@@ -24,18 +21,18 @@ from collections import namedtuple
 
 
 def generate_tfrecord(script_directory, folder):
-    csv_input_path = os.path.join(script_directory, 'images', folder + '_labels.csv')
-    labelmap_path = os.path.join(script_directory, 'tfrecord/labelmap.txt')
+    csv_input_path = os.path.join(script_directory, 'images', f'{folder}_labels.csv')
+    labelmap_path = os.path.join(script_directory, 'tfrecord', 'labelmap.txt')
     image_dir_path = os.path.join(script_directory, 'images', folder)
-    output_tfrecord_path = os.path.join(script_directory, 'tfrecord', folder+'.tfrecord')
+    output_tfrecord_path = os.path.join(script_directory, 'tfrecord', f'{folder}.tfrecord')
 
     def split(df, group):
         data = namedtuple('data', ['filename', 'object'])
         gb = df.groupby(group)
         return [data(filename, gb.get_group(x)) for filename, x in zip(gb.groups.keys(), gb.groups)]
 
-    def create_tf_example(group, path):
-        with tf.gfile.GFile(os.path.join(path, '{}'.format(group.filename)), 'rb') as fid:
+    def create_tf_example(group, path, labels):
+        with tf.gfile.GFile(os.path.join(path, f'{group.filename}'), 'rb') as fid:
             encoded_jpg = fid.read()
         encoded_jpg_io = io.BytesIO(encoded_jpg)
         image = Image.open(encoded_jpg_io)
@@ -43,16 +40,8 @@ def generate_tfrecord(script_directory, folder):
 
         filename = group.filename.encode('utf8')
         image_format = b'jpg'
-        xmins = []
-        xmaxs = []
-        ymins = []
-        ymaxs = []
-        classes_text = []
-        classes = []
-
-        labels = []
-        with open(labelmap_path, 'r') as f:
-            labels = [line.strip() for line in f.readlines()]
+        xmins, xmaxs, ymins, ymaxs = [], [], [], []
+        classes_text, classes = [], []
 
         for index, row in group.object.iterrows():
             xmins.append(row['xmin'] / width)
@@ -85,19 +74,20 @@ def generate_tfrecord(script_directory, folder):
 
     # Craft TFRecord files (.tfrecord)
     grouped = split(examples, 'filename')
+    labels = []
+    with open(labelmap_path, 'r') as f:
+        labels = [line.strip() for line in f.readlines()]
+
     for group in grouped:
-        tf_example = create_tf_example(group, path)
+        tf_example = create_tf_example(group, path, labels)
         writer.write(tf_example.SerializeToString())
 
     writer.close()
     output_path = os.path.join(os.getcwd(), output_tfrecord_path)
-    print('Successfully created the TFRecords: {}'.format(output_path))
+    print(f'Successfully created the TFRecords: {output_path}')
 
     # Craft labelmap file (.pbtxt)
-    path_to_labelpbtxt = os.path.join(os.getcwd(), 'tfrecord/labelmap.pbtxt')
-
-    with open(labelmap_path, 'r') as f:
-        labels = [line.strip() for line in f.readlines()]
+    path_to_labelpbtxt = os.path.join(os.getcwd(), 'tfrecord', 'labelmap.pbtxt')
 
     with open(path_to_labelpbtxt, 'w') as f:
         for i, label in enumerate(labels, start=1):
@@ -105,17 +95,6 @@ def generate_tfrecord(script_directory, folder):
 
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
-
-# train_csv_path = os.path.join(script_directory, 'images/train_labels.csv')
-# valid_csv_path = os.path.join(script_directory, 'images/valid_labels.csv')
-
-# label_path = os.path.join(script_directory, 'tfrecord/labelmap.txt')
-
-# images_train_path = os.path.join(script_directory, 'images/train')
-# images_valid_path = os.path.join(script_directory, 'images/valid')
-
-# output_train_path = os.path.join(script_directory, 'tfrecord/train.tfrecord')
-# output_valid_path = os.path.join(script_directory, 'tfrecord/valid.tfrecord')
 
 folders = ['train', 'valid']
 
