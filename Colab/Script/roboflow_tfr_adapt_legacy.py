@@ -65,6 +65,9 @@ nb_zip_files = len(zip_files)
 if nb_zip_files != 1 and nb_zip_files != 3:
     raise ValueError(f"Error: There should be 1 zip file or 3 in the directory but there was {nb_zip_files}.")
 
+step_2 = time.time()
+et_step_2 = step_2 - start_time
+print(f"\n\n--Time : Launch to Step 3: {et_step_2:.4f} seconds--\n\n")
 
 # Step 3: Unzip the identified zip file into the extracted folder
 for i, zip_file in enumerate(zip_files):
@@ -112,8 +115,8 @@ for i, zip_file in enumerate(zip_files):
     shutil.rmtree(extract_path)
 
 step_3 = time.time()
-et_step_3 = step_3 - start_time
-print(f"\n\n--Time : Launch to Step 3: {et_step_3:.4f} seconds--\n\n")
+et_step_3 = step_3 - step_2
+print(f"\n\n--Time : Step 2 to Step 3: {et_step_3:.4f} seconds--\n\n")
 
 # Step 4: Take labelmap.pbtxt to create labelmap.txt tf standard
 with open(labelmap_pbtxt_path, 'r') as file:
