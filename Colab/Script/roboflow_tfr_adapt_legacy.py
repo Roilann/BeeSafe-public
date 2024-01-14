@@ -52,48 +52,49 @@ def unzip_file(zip_path, extract_path):
 script_directory = os.path.dirname(os.path.abspath(__file__))
 output_path = os.path.join(script_directory, 'tfrecord')
 create_folder(output_path)
+labelmap_txt_path = os.path.join(output_path, 'labelmap.txt')
+labelmap_pbtxt_path = os.path.join(output_path, 'labelmap.pbtxt')
 
 # Step 2: Identify the only zip file and extracted folder dynamically
 zip_files = [file for file in os.listdir(script_directory) if file.endswith('.zip')]
 if len(zip_files) != 1:
     raise ValueError("Error: There should be exactly one zip file in the current directory.")
 
-zip_file = zip_files[0]
-extracted_folder = os.path.splitext(zip_file)[0]
+for zip_file in zip_files:
+    extracted_folder = os.path.splitext(zip_file)[0]
 
-# Step 3: Unzip the identified zip file into the extracted folder
-zip_path = os.path.join(script_directory, zip_file)
-extract_path = os.path.join(script_directory, extracted_folder)
-unzip_file(zip_path, extract_path)
+    # Step 3: Unzip the identified zip file into the extracted folder
+    zip_path = os.path.join(script_directory, zip_file)
+    extract_path = os.path.join(script_directory, extracted_folder)
+    unzip_file(zip_path, extract_path)
 
-# Step 4: Identify subfolders within the extracted folder
-result, subfolders = contains_subfolder(extract_path)
+    # Step 4: Identify subfolders within the extracted folder
+    result, subfolders = contains_subfolder(extract_path)
 
-# Step 6: Process subfolders (train, test, valid)
-if result:
-    for folder_name in subfolders:
-        folder_path = os.path.join(extract_path, folder_name)
-        tf_file = [file for file in os.listdir(folder_path) if file.endswith('.tfrecord')]
+    # Step 6: Process subfolders (train, test, valid)
+    if result:
+        for folder_name in subfolders:
+            folder_path = os.path.join(extract_path, folder_name)
+            tf_file = [file for file in os.listdir(folder_path) if file.endswith('.tfrecord')]
 
-        if len(tf_file) > 1:
-            raise ValueError(f"Error: More than one .tfrecord file found in folder {folder_name}")
-        if len(tf_file) == 0:
-            raise ValueError(f"Error: No .tfrecord file found in folder {folder_name}")
+            if len(tf_file) > 1:
+                raise ValueError(f"Error: More than one .tfrecord file found in folder {folder_name}")
+            if len(tf_file) == 0:
+                raise ValueError(f"Error: No .tfrecord file found in folder {folder_name}")
 
-        tf_file_path = os.path.join(folder_path, tf_file[0])
-        tf_file_output_path = os.path.join(output_path, f"{folder_name}.tfrecord")
+            tf_file_path = os.path.join(folder_path, tf_file[0])
+            tf_file_output_path = os.path.join(output_path, f"{folder_name}.tfrecord")
 
-        os.rename(tf_file_path, tf_file_output_path)
+            os.rename(tf_file_path, tf_file_output_path)
 
-# Step 7: Get the labelmap
-first_subfolder_path = os.path.join(extract_path, subfolders[0])
-labelmap_file = [file for file in os.listdir(folder_path) if file.endswith('.pbtxt')]
-print(labelmap_file)
-labelmap_path = os.path.join(first_subfolder_path, labelmap_file[0])
-labelmap_txt_path = os.path.join(output_path, 'labelmap.txt')
-labelmap_pbtxt_path = os.path.join(output_path, 'labelmap.pbtxt')
+    # Step 7: Get the labelmap
+    first_subfolder_path = os.path.join(extract_path, subfolders[0])
+    labelmap_file = [file for file in os.listdir(first_subfolder_path) if file.endswith('.pbtxt')]
+    labelmap_path = os.path.join(first_subfolder_path, labelmap_file[0])
+    os.rename(labelmap_path, labelmap_pbtxt_path)
 
-os.rename(labelmap_path, labelmap_pbtxt_path)
+    # Step 9: Delete the extracted folder and its contents
+    shutil.rmtree(extract_path)
 
 # Step 8: Take labelmap.pbtxt to create labelmap.txt tf standard
 with open(labelmap_pbtxt_path, 'r') as file:
@@ -104,6 +105,3 @@ parsed_data = parse_labelmap(labelmap_content)
 with open(labelmap_txt_path, 'w') as f:
     for item_name in parsed_data:
         f.write(f'{item_name}\n')
-
-# Step 9: Delete the extracted folder and its contents
-shutil.rmtree(extract_path)
