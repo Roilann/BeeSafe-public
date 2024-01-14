@@ -306,7 +306,7 @@ for zip_file in zip_files:
 
 step_3 = time.time()
 et_step_3 = step_3 - start_time
-print(f"\n\n--Time : Launch to Step 3: {et_step_3} seconds--\n\n")
+print(f"\n\n--Time : Launch to Step 3: {et_step_3:.4f} seconds--\n\n")
 
 # Step 4: Creates labelmap.txt
 print(f"\nLabelmap creation")
@@ -325,7 +325,7 @@ if result:
 
 step_4 = time.time()
 et_step_4 = step_4 - step_3
-print(f"\n\n--Time : Step 3 to Step 4: {et_step_4} seconds--\n\n")
+print(f"\n\n--Time : Step 3 to Step 4: {et_step_4:.4f} seconds--\n\n")
 
 # Step 5: xml_to_csv
 print(f"\nStart csv conversion")
@@ -338,7 +338,7 @@ for folder in ['train', 'valid']:
 
 step_5 = time.time()
 et_step_5 = step_5 - step_4
-print(f"\n\n--Time : Step 4 to Step 5: {et_step_5} seconds--\n\n")
+print(f"\n\n--Time : Step 4 to Step 5: {et_step_5:.4f} seconds--\n\n")
 
 # Step 6: tfrecord_conversion
 print(f"Start tfrecord conversion")
@@ -347,12 +347,12 @@ for folder in ['train', 'valid']:
 
 step_6 = time.time()
 et_step_6 = step_6 - step_5
-print(f"\n\n--Time : Step 5 to Step 6: {et_step_6} seconds--\n\n")
+print(f"\n\n--Time : Step 5 to Step 6: {et_step_6:.4f} seconds--\n\n")
 
 # Time
 end_time = time.time()
 elapsed_time = end_time - start_time
-print(f"Execution time: {elapsed_time} seconds")
+print(f"Execution time: {elapsed_time:.4f} seconds")
 
 # Deletion
 # shutil.rmtree(output_path)
@@ -362,6 +362,6 @@ print(f"Execution time: {elapsed_time} seconds")
 # Time
 end_time_deletion = time.time()
 elapsed_time_deletion = end_time_deletion - end_time
-print(f"Deletion time: {elapsed_time_deletion} seconds")
+print(f"Deletion time: {elapsed_time_deletion:.4f} seconds")
 complete_elapsed_time = end_time_deletion - start_time
-print(f"Complete Execution time: {complete_elapsed_time} seconds")
+print(f"Complete Execution time: {complete_elapsed_time:.4f} seconds")
