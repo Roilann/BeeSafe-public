@@ -458,17 +458,17 @@ for i, zip_file in enumerate(zip_files):
         else:
             raise ValueError(f'extract path {extract_path} has not been recognized as Pascal VOC or Tfrecord file')
 
-        if TFRECORD:
-            print(f'i = {i}')
-            # Step 3.4: Get the labelmap
-            if i == 0:
-                first_subfolder_path = os.path.join(extract_path, subfolders[0]) if result else extract_path
-                labelmap_file = [file for file in os.listdir(first_subfolder_path) if file.endswith('.pbtxt')]
-                labelmap_path = os.path.join(first_subfolder_path, labelmap_file[0])
-                os.rename(labelmap_path, labelmap_pbtxt_path)
+    if TFRECORD:
+        print(f'i = {i}')
+        # Step 3.4: Get the labelmap
+        if i == 0:
+            first_subfolder_path = os.path.join(extract_path, subfolders[0]) if result else extract_path
+            labelmap_file = [file for file in os.listdir(first_subfolder_path) if file.endswith('.pbtxt')]
+            labelmap_path = os.path.join(first_subfolder_path, labelmap_file[0])
+            os.rename(labelmap_path, labelmap_pbtxt_path)
 
-            # Step 3.5: Delete the extracted folder and its contents
-            shutil.rmtree(extract_path)
+        # Step 3.5: Delete the extracted folder and its contents
+        shutil.rmtree(extract_path)
 
 step_3 = time.time()
 et_step_3 = step_3 - start_time
