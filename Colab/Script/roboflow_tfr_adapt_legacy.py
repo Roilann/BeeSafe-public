@@ -61,7 +61,7 @@ nb_zip_files = len(zip_files)
 if nb_zip_files != 1 and nb_zip_files != 3:
     raise ValueError(f"Error: There should be 1 zip file or 3 in the directory but there was {nb_zip_files}.")
 
-for zip_file in zip_files:
+for i, zip_file in zip_files:
     extracted_folder = os.path.splitext(zip_file)[0]
 
     # Step 3: Unzip the identified zip file into the extracted folder
@@ -89,10 +89,11 @@ for zip_file in zip_files:
             os.rename(tf_file_path, tf_file_output_path)
 
     # Step 7: Get the labelmap
-    first_subfolder_path = os.path.join(extract_path, subfolders[0])
-    labelmap_file = [file for file in os.listdir(first_subfolder_path) if file.endswith('.pbtxt')]
-    labelmap_path = os.path.join(first_subfolder_path, labelmap_file[0])
-    os.rename(labelmap_path, labelmap_pbtxt_path)
+    if i == 0:
+        first_subfolder_path = os.path.join(extract_path, subfolders[0])
+        labelmap_file = [file for file in os.listdir(first_subfolder_path) if file.endswith('.pbtxt')]
+        labelmap_path = os.path.join(first_subfolder_path, labelmap_file[0])
+        os.rename(labelmap_path, labelmap_pbtxt_path)
 
     # Step 9: Delete the extracted folder and its contents
     shutil.rmtree(extract_path)
