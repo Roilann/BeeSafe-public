@@ -305,7 +305,7 @@ for zip_file in zip_files:
         shutil.move(extracted_folder, folder_images_path)
 
 step_3 = time.time()
-et_step_3 = start_time - step_3
+et_step_3 = step_3 - start_time
 print(f"\n\n--Time : Launch to Step 3: {et_step_3} seconds--\n\n")
 
 # Step 4: Creates labelmap.txt
@@ -324,7 +324,7 @@ if result:
             f.write(f'{item_name}\n')
 
 step_4 = time.time()
-et_step_4 = step_3 - step_4
+et_step_4 = step_4 - step_3
 print(f"\n\n--Time : Step 3 to Step 4: {et_step_4} seconds--\n\n")
 
 # Step 5: xml_to_csv
@@ -337,7 +337,7 @@ for folder in ['train', 'valid']:
     save_csv(result, csv_filename)
 
 step_5 = time.time()
-et_step_5 = step_4 - step_5
+et_step_5 = step_5 - step_4
 print(f"\n\n--Time : Step 4 to Step 5: {et_step_5} seconds--\n\n")
 
 # Step 6: tfrecord_conversion
@@ -346,7 +346,7 @@ for folder in ['train', 'valid']:
     generate_tfrecord(images_path, output_path, folder)
 
 step_6 = time.time()
-et_step_6 = step_5 - step_6
+et_step_6 = step_6 - step_5
 print(f"\n\n--Time : Step 5 to Step 6: {et_step_6} seconds--\n\n")
 
 # Time
