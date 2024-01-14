@@ -1,4 +1,4 @@
-# Created by Roilann with the help of ChatGPT
+# Mainly created by Roilann with the help of ChatGPT
 
 # How to use it:
 # 1) place it in a folder with the zip file of the dataset
@@ -273,7 +273,7 @@ create_folder(output_path)
 # Step 2: Identify the zip file(s) and extracted folder dynamically
 zip_files = [file for file in os.listdir(script_directory) if file.endswith('.zip')]
 nb_zip_files = len(zip_files)
-if nb_zip_files != (1 and 3):
+if nb_zip_files != 1 and nb_zip_files != 3:
     raise ValueError(f"Error: There should be 1 zip file or 3 in the directory but there was {nb_zip_files}.")
 
 # Step 3: Unzip data and place it in unzip
