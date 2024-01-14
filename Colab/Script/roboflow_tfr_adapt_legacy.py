@@ -65,24 +65,22 @@ nb_zip_files = len(zip_files)
 if nb_zip_files != 1 and nb_zip_files != 3:
     raise ValueError(f"Error: There should be 1 zip file or 3 in the directory but there was {nb_zip_files}.")
 
-step_2 = time.time()
-et_step_2 = step_2 - start_time
-print(f"\n\n--Time : Launch to Step 3: {et_step_2:.4f} seconds--\n\n")
 
-# Step 3: Unzip the identified zip file into the extracted folder
 for i, zip_file in enumerate(zip_files):
     extracted_folder = os.path.splitext(zip_file)[0]
 
+    # Step 3.1: Unzip the identified zip file into the extracted folder
     zip_path = os.path.join(script_directory, zip_file)
     extract_path = os.path.join(script_directory, extracted_folder)
+    print(f"\nStart {zip_file} extraction")
     unzip_file(zip_path, extract_path)
-    print(f'\nextract_path = {extract_path}')
+    print(f"{zip_file} is extracted")
 
-    # Step 3.1: Identify subfolders within the extracted folder
+    # Step 3.2: Identify subfolders within the extracted folder
     result, subfolders = contains_subfolder(extract_path)
     print(f'result = {result}')
 
-    # Step 3.2: Process subfolders (train, test, valid)
+    # Step 3.3: Process subfolders (train, test, valid)
     if result:
         for folder_name in subfolders:
             folder_path = os.path.join(extract_path, folder_name)
@@ -99,7 +97,7 @@ for i, zip_file in enumerate(zip_files):
             os.rename(tf_file_path, tf_file_output_path)
 
     print(f'i = {i}')
-    # Step 3.3: Get the labelmap
+    # Step 3.4: Get the labelmap
     if i == 0 and result:
         first_subfolder_path = os.path.join(extract_path, subfolders[0])
         labelmap_file = [file for file in os.listdir(first_subfolder_path) if file.endswith('.pbtxt')]
@@ -111,12 +109,12 @@ for i, zip_file in enumerate(zip_files):
         labelmap_path = os.path.join(extract_path, labelmap_file[0])
         os.rename(labelmap_path, labelmap_pbtxt_path)
 
-    # Step 3.4: Delete the extracted folder and its contents
+    # Step 3.5: Delete the extracted folder and its contents
     shutil.rmtree(extract_path)
 
 step_3 = time.time()
-et_step_3 = step_3 - step_2
-print(f"\n\n--Time : Step 2 to Step 3: {et_step_3:.4f} seconds--\n\n")
+et_step_3 = step_3 - start_time
+print(f"\n\n--Time : Launch to Step 3: {et_step_3:.4f} seconds--\n\n")
 
 # Step 4: Take labelmap.pbtxt to create labelmap.txt tf standard
 with open(labelmap_pbtxt_path, 'r') as file:
