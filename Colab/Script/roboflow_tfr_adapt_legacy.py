@@ -37,8 +37,8 @@ script_directory = os.path.dirname(os.path.abspath(__file__))
 # Step 2: Identify the only zip file and extracted folder dynamically
 zip_files = [file for file in os.listdir(script_directory) if file.endswith('.zip')]
 if len(zip_files) != 1:
-    print("Error: There should be exactly one zip file in the current directory.")
-    return
+    raise ValueError("Error: There should be exactly one zip file in the current directory.")
+
 
 zip_file = zip_files[0]
 extracted_folder = os.path.splitext(zip_file)[0]
