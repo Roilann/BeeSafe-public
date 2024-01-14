@@ -95,8 +95,15 @@ for zip_file in zip_files:
         folder_images_path = os.path.join(images_path, extracted_folder)
         shutil.move(extracted_folder, folder_images_path)
 
+step_3 = time.time()
+et_step_3 = step_3 - start_time
+print(f"\n\n--Time : Launch to Step 3: {et_step_3:.4f} seconds--\n\n")
+
 # Step 4: Process subfolders (train, test, valid)
-for folder_name in subfolders:
+# Get folders in images
+folders_to_process = [subfolder for subfolder in os.listdir(images_path) if
+                      os.path.isdir(os.path.join(images_path, subfolder))]
+for folder_name in folders_to_process:
     folder_path = os.path.join(extract_path, folder_name)
     tf_file = [file for file in os.listdir(folder_path) if file.endswith('.tfrecord')]
 
@@ -111,6 +118,10 @@ for folder_name in subfolders:
 
     os.rename(tf_file_path, tf_file_output_path)
 
+step_4 = time.time()
+et_step_4 = step_4 - step_3
+print(f"\n\n--Time : Step 3 to Step 4: {et_step_4:.4f} seconds--\n\n")
+
 # Step 5: Get the labelmap
 first_subfolder_path = os.path.join(extract_path, subfolders[0])
 labelmap_file = [file for file in os.listdir(folder_path) if file.endswith('.pbtxt')]
@@ -119,6 +130,10 @@ labelmap_txt_path = os.path.join(output_path, 'labelmap.txt')
 labelmap_pbtxt_path = os.path.join(output_path, 'labelmap.pbtxt')
 
 os.rename(labelmap_path, labelmap_pbtxt_path)
+
+step_5 = time.time()
+et_step_5 = step_5 - step_4
+print(f"\n\n--Time : Step 4 to Step 5: {et_step_5:.4f} seconds--\n\n")
 
 # Step 6: Take labelmap.pbtxt to create labelmap.txt tf standard
 with open(labelmap_pbtxt_path, 'r') as file:
@@ -129,6 +144,15 @@ parsed_data = parse_labelmap(labelmap_content)
 with open(labelmap_txt_path, 'w') as f:
     for item_name in parsed_data:
         f.write(f'{item_name}\n')
+
+step_6 = time.time()
+et_step_6 = step_6 - step_5
+print(f"\n\n--Time : Step 5 to Step 6: {et_step_6:.4f} seconds--\n\n")
+
+# Time
+end_time = time.time()
+elapsed_time = end_time - start_time
+print(f"\n\n--Time : Execution time: {elapsed_time:.4f} seconds--\n\n")
 
 # Step 7: Delete the extracted folder and its contents
 shutil.rmtree(extract_path)
