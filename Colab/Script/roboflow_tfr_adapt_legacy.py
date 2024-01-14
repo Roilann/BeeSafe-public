@@ -61,7 +61,7 @@ nb_zip_files = len(zip_files)
 if nb_zip_files != 1 and nb_zip_files != 3:
     raise ValueError(f"Error: There should be 1 zip file or 3 in the directory but there was {nb_zip_files}.")
 
-for i, zip_file in zip_files:
+for i, zip_file in enumerate(zip_files):
     extracted_folder = os.path.splitext(zip_file)[0]
 
     # Step 3: Unzip the identified zip file into the extracted folder
