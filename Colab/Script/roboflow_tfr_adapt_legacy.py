@@ -55,10 +55,11 @@ create_folder(output_path)
 labelmap_txt_path = os.path.join(output_path, 'labelmap.txt')
 labelmap_pbtxt_path = os.path.join(output_path, 'labelmap.pbtxt')
 
-# Step 2: Identify the only zip file and extracted folder dynamically
+# Step 2: Identify the zip file(s) and extracted folder dynamically
 zip_files = [file for file in os.listdir(script_directory) if file.endswith('.zip')]
-if len(zip_files) != 1:
-    raise ValueError("Error: There should be exactly one zip file in the current directory.")
+nb_zip_files = len(zip_files)
+if nb_zip_files != 1 and nb_zip_files != 3:
+    raise ValueError(f"Error: There should be 1 zip file or 3 in the directory but there was {nb_zip_files}.")
 
 for zip_file in zip_files:
     extracted_folder = os.path.splitext(zip_file)[0]
