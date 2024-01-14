@@ -10,19 +10,9 @@
 
 import os
 import shutil
-import re
 from zipfile import ZipFile
-
-
-def contains_subfolder(folder_path):
-    if os.path.isdir(folder_path):
-        subfolders = [item for item in os.listdir(folder_path) if os.path.isdir(os.path.join(folder_path, item))]
-        if subfolders:
-            return True, subfolders
-        else:
-            return False, []
-    else:
-        raise ValueError(f"The provided path '{folder_path}' is not a valid directory.")
+import re
+import time
 
 
 def parse_labelmap(labelmap_content):
@@ -37,6 +27,17 @@ def parse_labelmap(labelmap_content):
     return result
 
 
+def contains_subfolder(folder_path):
+    if os.path.isdir(folder_path):
+        subfolders = [item for item in os.listdir(folder_path) if os.path.isdir(os.path.join(folder_path, item))]
+        if subfolders:
+            return True, subfolders
+        else:
+            return False, []
+    else:
+        raise ValueError(f"The provided path '{folder_path}' is not a valid directory.")
+
+
 def create_folder(folder_path):
     # Check if the folder already exists
     if not os.path.exists(folder_path):
@@ -47,6 +48,9 @@ def unzip_file(zip_path, extract_path):
     with ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(extract_path)
 
+
+# Measure execution time
+start_time = time.time()
 
 # Step 1: Get the current script directory
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -61,20 +65,21 @@ nb_zip_files = len(zip_files)
 if nb_zip_files != 1 and nb_zip_files != 3:
     raise ValueError(f"Error: There should be 1 zip file or 3 in the directory but there was {nb_zip_files}.")
 
+
+# Step 3: Unzip the identified zip file into the extracted folder
 for i, zip_file in enumerate(zip_files):
     extracted_folder = os.path.splitext(zip_file)[0]
 
-    # Step 3: Unzip the identified zip file into the extracted folder
     zip_path = os.path.join(script_directory, zip_file)
     extract_path = os.path.join(script_directory, extracted_folder)
     unzip_file(zip_path, extract_path)
     print(f'\nextract_path = {extract_path}')
 
-    # Step 4: Identify subfolders within the extracted folder
+    # Step 3.1: Identify subfolders within the extracted folder
     result, subfolders = contains_subfolder(extract_path)
     print(f'result = {result}')
 
-    # Step 6: Process subfolders (train, test, valid)
+    # Step 3.2: Process subfolders (train, test, valid)
     if result:
         for folder_name in subfolders:
             folder_path = os.path.join(extract_path, folder_name)
@@ -91,7 +96,7 @@ for i, zip_file in enumerate(zip_files):
             os.rename(tf_file_path, tf_file_output_path)
 
     print(f'i = {i}')
-    # Step 7: Get the labelmap
+    # Step 3.3: Get the labelmap
     if i == 0 and result:
         first_subfolder_path = os.path.join(extract_path, subfolders[0])
         labelmap_file = [file for file in os.listdir(first_subfolder_path) if file.endswith('.pbtxt')]
@@ -103,10 +108,14 @@ for i, zip_file in enumerate(zip_files):
         labelmap_path = os.path.join(extract_path, labelmap_file[0])
         os.rename(labelmap_path, labelmap_pbtxt_path)
 
-    # Step 9: Delete the extracted folder and its contents
+    # Step 3.4: Delete the extracted folder and its contents
     shutil.rmtree(extract_path)
 
-# Step 8: Take labelmap.pbtxt to create labelmap.txt tf standard
+step_3 = time.time()
+et_step_3 = step_3 - start_time
+print(f"\n\n--Time : Launch to Step 3: {et_step_3:.4f} seconds--\n\n")
+
+# Step 4: Take labelmap.pbtxt to create labelmap.txt tf standard
 with open(labelmap_pbtxt_path, 'r') as file:
     labelmap_content = file.read()
 
@@ -115,3 +124,21 @@ parsed_data = parse_labelmap(labelmap_content)
 with open(labelmap_txt_path, 'w') as f:
     for item_name in parsed_data:
         f.write(f'{item_name}\n')
+
+step_4 = time.time()
+et_step_4 = step_4 - step_3
+print(f"\n\n--Time : Step 3 to Step 4: {et_step_4:.4f} seconds--\n\n")
+
+# Time
+end_time = time.time()
+elapsed_time = end_time - start_time
+print(f"\n\n--Time : Execution time: {elapsed_time:.4f} seconds--\n\n")
+
+# Deletion
+
+# Time
+end_time_deletion = time.time()
+elapsed_time_deletion = end_time_deletion - end_time
+print(f"\n\n--Time : Deletion time: {elapsed_time_deletion:.4f} seconds--\n\n")
+complete_elapsed_time = end_time_deletion - start_time
+print(f"\n\n--Time : Complete Execution time: {complete_elapsed_time:.4f} seconds--\n\n")
