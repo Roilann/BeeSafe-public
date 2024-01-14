@@ -78,11 +78,11 @@ def generate_tfrecord(script_directory, folder):
     with open(labelmap_path, 'r') as f:
         labels = [line.strip() for line in f.readlines()]
 
-    for group in grouped:
-        tf_example = create_tf_example(group, path, labels)
-        writer.write(tf_example.SerializeToString())
+    with tf.python_io.TFRecordWriter(output_tfrecord_path) as writer:
+        for group in grouped:
+            tf_example = create_tf_example(group, path, labels)
+            writer.write(tf_example.SerializeToString())
 
-    writer.close()
     output_path = os.path.join(os.getcwd(), output_tfrecord_path)
     print(f'Successfully created the TFRecords: {output_path}')
 
