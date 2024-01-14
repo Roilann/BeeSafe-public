@@ -356,7 +356,7 @@ print(f"\n\n--Time : Execution time: {elapsed_time:.4f} seconds--\n\n")
 
 # Deletion
 for zip_file in zip_files:
-    shutil.rmtree(zip_file)
+    os.remove(zip_file)
 os.remove(os.path.join(images_path, 'train_labels.csv'))
 os.remove(os.path.join(images_path, 'valid_labels.csv'))
 
