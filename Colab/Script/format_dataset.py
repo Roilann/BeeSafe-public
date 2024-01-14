@@ -395,13 +395,13 @@ for i, zip_file in enumerate(zip_files):
     # Step 3.2: Identify subfolders within the extracted folder
     result, subfolders = contains_subfolder(extract_path)
 
-    # PASCAL_VOC
-    if check_pvoc_folder(extract_path):
-        PASCAL_VOC = 1
-        TFRECORD = 0
-        if result:
+    if result:
+        print(f"Start copy of folders")
+        # PASCAL_VOC
+        if check_pvoc_folder(extract_path):
+            PASCAL_VOC = 1
+            TFRECORD = 0
             # Step 3.3: Process subfolders (train, test, valid)
-            print(f"Start copy of folders")
             for folder_name in subfolders:
                 folder_path = os.path.join(extract_path, folder_name)
                 folder_images_path = os.path.join(images_path, folder_name)
@@ -409,15 +409,11 @@ for i, zip_file in enumerate(zip_files):
                 shutil.move(folder_path, folder_images_path)
 
             shutil.rmtree(extracted_folder)
-        else:
-            folder_images_path = os.path.join(images_path, extracted_folder)
-            shutil.move(extracted_folder, folder_images_path)
-    # TFRECORD
-    elif check_tfr_folder(extract_path):
-        PASCAL_VOC = 0
-        TFRECORD = 1
-        # Step 3.3: Process subfolders (train, test, valid)
-        if result:
+
+        # TFRECORD
+        elif check_tfr_folder(extract_path):
+            PASCAL_VOC = 0
+            TFRECORD = 1
             for folder_name in subfolders:
                 folder_path = os.path.join(extract_path, folder_name)
                 tf_file = check_folder_4_tfr(folder_path, folder_name)
@@ -427,25 +423,39 @@ for i, zip_file in enumerate(zip_files):
 
                 os.rename(tf_file_path, tf_file_output_path)
         else:
+            raise ValueError(f'extract path {extract_path} has not been recognized as Pascal VOC or Tfrecord file')
+
+    else:
+        # PASCAL_VOC
+        if check_pvoc_folder(extract_path):
+            PASCAL_VOC = 1
+            TFRECORD = 0
+            folder_images_path = os.path.join(images_path, extracted_folder)
+            shutil.move(extracted_folder, folder_images_path)
+        # TFRECORD
+        elif check_tfr_folder(extract_path):
+            PASCAL_VOC = 0
+            TFRECORD = 1
             folder_name = os.path.basename(extract_path)
             tf_file = check_folder_4_tfr(extract_path, folder_name)
             tf_file_path = os.path.join(extract_path, tf_file[0])
             tf_file_output_path = os.path.join(output_path, f"{folder_name}.tfrecord")
 
             os.rename(tf_file_path, tf_file_output_path)
+        else:
+            raise ValueError(f'extract path {extract_path} has not been recognized as Pascal VOC or Tfrecord file')
 
-        print(f'i = {i}')
-        # Step 3.4: Get the labelmap
-        if i == 0:
-            first_subfolder_path = os.path.join(extract_path, subfolders[0]) if result else extract_path
-            labelmap_file = [file for file in os.listdir(first_subfolder_path) if file.endswith('.pbtxt')]
-            labelmap_path = os.path.join(first_subfolder_path, labelmap_file[0])
-            os.rename(labelmap_path, labelmap_pbtxt_path)
+        if TFRECORD:
+            print(f'i = {i}')
+            # Step 3.4: Get the labelmap
+            if i == 0:
+                first_subfolder_path = os.path.join(extract_path, subfolders[0]) if result else extract_path
+                labelmap_file = [file for file in os.listdir(first_subfolder_path) if file.endswith('.pbtxt')]
+                labelmap_path = os.path.join(first_subfolder_path, labelmap_file[0])
+                os.rename(labelmap_path, labelmap_pbtxt_path)
 
-        # Step 3.5: Delete the extracted folder and its contents
-        shutil.rmtree(extract_path)
-    else:
-        raise ValueError(f'extract path {extract_path} has not been reccognized as Pascal VOC or Tfrecord file')
+            # Step 3.5: Delete the extracted folder and its contents
+            shutil.rmtree(extract_path)
 
 step_3 = time.time()
 et_step_3 = step_3 - start_time
