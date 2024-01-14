@@ -70,19 +70,20 @@ unzip_file(zip_path, extract_path)
 result, subfolders = contains_subfolder(extract_path)
 
 # Step 6: Process subfolders (train, test, valid)
-for folder_name in subfolders:
-    folder_path = os.path.join(extract_path, folder_name)
-    tf_file = [file for file in os.listdir(folder_path) if file.endswith('.tfrecord')]
+if result:
+    for folder_name in subfolders:
+        folder_path = os.path.join(extract_path, folder_name)
+        tf_file = [file for file in os.listdir(folder_path) if file.endswith('.tfrecord')]
 
-    if len(tf_file) > 1:
-        raise ValueError(f"Error: More than one .tfrecord file found in folder {folder_name}")
-    if len(tf_file) == 0:
-        raise ValueError(f"Error: No .tfrecord file found in folder {folder_name}")
+        if len(tf_file) > 1:
+            raise ValueError(f"Error: More than one .tfrecord file found in folder {folder_name}")
+        if len(tf_file) == 0:
+            raise ValueError(f"Error: No .tfrecord file found in folder {folder_name}")
 
-    tf_file_path = os.path.join(folder_path, tf_file[0])
-    tf_file_output_path = os.path.join(output_path, f"{folder_name}.tfrecord")
+        tf_file_path = os.path.join(folder_path, tf_file[0])
+        tf_file_output_path = os.path.join(output_path, f"{folder_name}.tfrecord")
 
-    os.rename(tf_file_path, tf_file_output_path)
+        os.rename(tf_file_path, tf_file_output_path)
 
 # Step 7: Get the labelmap
 first_subfolder_path = os.path.join(extract_path, subfolders[0])
