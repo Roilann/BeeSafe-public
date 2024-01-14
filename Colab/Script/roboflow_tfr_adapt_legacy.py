@@ -68,9 +68,11 @@ for i, zip_file in enumerate(zip_files):
     zip_path = os.path.join(script_directory, zip_file)
     extract_path = os.path.join(script_directory, extracted_folder)
     unzip_file(zip_path, extract_path)
+    print(f'extract_path = {extract_path}')
 
     # Step 4: Identify subfolders within the extracted folder
     result, subfolders = contains_subfolder(extract_path)
+    print(f'result = {result}')
 
     # Step 6: Process subfolders (train, test, valid)
     if result:
@@ -88,6 +90,7 @@ for i, zip_file in enumerate(zip_files):
 
             os.rename(tf_file_path, tf_file_output_path)
 
+    print(f'i = {i}')
     # Step 7: Get the labelmap
     if i == 0:
         first_subfolder_path = os.path.join(extract_path, subfolders[0])
