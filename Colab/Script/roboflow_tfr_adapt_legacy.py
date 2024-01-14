@@ -98,10 +98,15 @@ for i, zip_file in enumerate(zip_files):
 
     print(f'i = {i}')
     # Step 3.4: Get the labelmap
-    if i == 0:
-        first_subfolder_path = os.path.join(extract_path, subfolders[0]) if result else extract_path
+    if i == 0 and result:
+        first_subfolder_path = os.path.join(extract_path, subfolders[0])
         labelmap_file = [file for file in os.listdir(first_subfolder_path) if file.endswith('.pbtxt')]
         labelmap_path = os.path.join(first_subfolder_path, labelmap_file[0])
+        os.rename(labelmap_path, labelmap_pbtxt_path)
+
+    elif i == 0 and not result:
+        labelmap_file = [file for file in os.listdir(extract_path) if file.endswith('.pbtxt')]
+        labelmap_path = os.path.join(extract_path, labelmap_file[0])
         os.rename(labelmap_path, labelmap_pbtxt_path)
 
     # Step 3.5: Delete the extracted folder and its contents
