@@ -1,4 +1,6 @@
 # Mainly created by Roilann with the help of ChatGPT
+# Inpired by GitHub user datitran: https://github.com/datitran/raccoon_dataset/blob/master/generate_tfrecord.py
+# And by Github user EdjeElectronics: https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/util_scripts/create_tfrecord.py
 
 # How to use it:
 # 1) place it in a folder with the zip file of the dataset

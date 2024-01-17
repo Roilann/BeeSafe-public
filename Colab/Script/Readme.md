@@ -2,6 +2,31 @@
 These scripts are supposed to work in Colab.
 They are made so no arguments are passed
 
+## create_labelmap.py
+**Author**: *Roilann* + *ChatGPT*
+
+**Explanation** : Get the 3 pascal_voc folders (**train** / **valid** / **test**) and run through them to get the different classes saved in a labelmap.txt\
+<u>Input:</u> 3 files (**train** / **valid** / **test**) within the folder `images` in pascal_voc format\
+<u>Output:</u> 1 labelmap.txt inside a folder `tfrecord`
+
+## format_dataset.py
+**Author**: *Roilann* + *ChatGPT*\
+**Credits**: *[datitran](https://github.com/datitran/raccoon_dataset/blob/master/generate_tfrecord.py)* &
+*[EdjeElectronics](https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/util_scripts/create_tfrecord.py)*
+
+**Explanation** : Is a combination of all the scripts in this folder\
+<u>Input:</u> 1 zip file (with **train** / **valid** / **test** inside) or 3 zip files (**train** / **valid** / **test**) in PVOC or TFrecord format\
+<u>Output:</u> (3 tfrecord (**train** / **valid** / **test**) + 1 labelmap.pbtxt + 1 labelmap.txt) => inside a folder `tfrecord`
+
+## format_pvoc_dataset.py
+**Author**: *Roilann* + *ChatGPT*\
+**Credits**: *[datitran](https://github.com/datitran/raccoon_dataset/blob/master/generate_tfrecord.py)* &
+*[EdjeElectronics](https://github.com/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/util_scripts/create_tfrecord.py)*
+
+**Explanation** : Get 3 zip files (**train** / **valid** / **test**) or 1 zip (with **train** / **valid** / **test** inside) in PVOC format to prep data to train.\
+<u>Input:</u> 1 zip file (with **train** / **valid** / **test** inside) or 3 zip files (**train** / **valid** / **test**) in PVOC format\
+<u>Output:</u> (3 tfrecord (**train** / **valid** / **test**) + 1 labelmap.pbtxt + 1 labelmap.txt) => inside a folder `tfrecord`
+
 ## roboflow_tfr_adapt.py
 **Author**: *Roilann* + *ChatGPT*\
 **Credits**: *[datitran](https://github.com/datitran/raccoon_dataset/blob/master/generate_tfrecord.py)*
